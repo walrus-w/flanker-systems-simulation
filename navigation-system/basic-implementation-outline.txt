@@ -1,0 +1,50 @@
+SWITCHOLOGY
+    Initialise aircraft position manually, data entered via PS-5 or using satellite or stored position
+    if stored position or satellite are unavailable:
+        select SET mode on PS-5
+            select 1R
+            enter latitude, + key to indicate N, - for S then enter decimal degrees.
+            select 2R
+            enter longitude as above
+            select 3R
+            enter heading (I am unsure if this should be true or magnetic)
+            select 4R
+            enter altitude of parking location
+            select 5R
+            enter QNH
+        Select alignment mode on left MFD
+
+    Entry of waypoints via the PS-5
+        select SET mode on PS-5
+            select 7 (FPL)
+                select button 1L
+                enter latitude, + key to indicate N, - for S then enter decimal degrees.
+                select 1R and enter longitude as above
+
+    TACAN setup - should this be RSBN for SM?
+        select SET mode on PS-5
+            select 5 (TCN)
+                select 1R
+                    enter TACAN station
+                    select 2R (optional)
+                    enter + to indicate X, - to indicate Y
+
+    ILS setup
+        select SET mode on PS-5
+            select 1 (DEST)
+                select 2R
+                    enter desired ILS frequency
+
+PROGRAM STRUCTURE
+class FlankerAvionics   initially only concerned with input, processing and display of nav information
+    data members
+        class INS   initial implementation will be very simplistic
+            class RLG   " "
+        class PS5D
+        class PS5D-Interface
+        class UFCP
+        class UFCP-Interface
+        class MFD-Interface
+        class NavComputer   will contain data members storing input from io devices
+
+
