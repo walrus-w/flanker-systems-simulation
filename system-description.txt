@@ -1,0 +1,5 @@
+WALRUS' NAV SYSTEM FOR CODENAME FLANKER Su-30
+- this is an implementation of an Inertial Navigation System (INS), coupled to a Ring Laser Gyroscope
+- its position may be updated via satellite (GLONASS/GPS)
+- the features implemented initially will be basic:
+    -
