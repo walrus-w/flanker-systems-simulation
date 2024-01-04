@@ -1,10 +1,10 @@
 //
-// Created by ctobi on 3/01/2024.
+// Created by Charles (Walrus) on 03/01/2024.
 //
 
 /*
- * Derived from BlackBox
- * Initial implementation will be a simple representation of a modern INS, using RLGs.
+ * Derived class from BlackBox
+ * Initial implementation will be a simple representation of a modern INS, using three RLGs and three accelerometers.
  */
 
 #ifndef SU_30_EFM_V2_7_3B_INERTIAL_NAVIGATION_SYSTEM_HXX
@@ -45,14 +45,14 @@ private:
     float currentLongitude;
     float currentAltitude;
     float currentSpeed;
-    int_least8_t currentHeading;
+    uint_least8_t currentHeading;
     uint_least8_t currentSpeedError;    // initialised to an arbitrary maximum value, which decreases as alignment time increases
     uint_least8_t currentHeadingError;  // error will gradually accumulate post-alignment, unless corrected via satellite or (potentially) radar fix
 
     // function members
     void setLatitude(float lat);        // functions used to initialise INS position and heading
     void setLongitude(float longitude);
-    void setHeading(int_least8_t);
+    void setHeading(int_least8_t heading);
     void setAltitude(float altitude)
 
 };
@@ -80,6 +80,14 @@ void InertialNavigationSystem::setLatitude(float lat) {
 
 void InertialNavigationSystem::setLongitude(float longitude) {
     currentLongitude = longitude;
+}
+
+void InertialNavigationSystem::setHeading(uint_least8_t heading) {
+    currentHeading = heading;
+}
+
+void InertialNavigationSystem::setAltitude(float altitude) {
+    currentAltitude = altitude;
 }
 
 
