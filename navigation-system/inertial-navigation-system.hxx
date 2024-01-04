@@ -14,7 +14,7 @@
 #include <cstdint>
 #include <chrono>
 #include "ring-laser-gyroscope.hxx"
-#include "black-box.hxx"
+#include "../black-box.hxx"
 #include "accelerometer.hxx"
 
 class InertialNavigationSystem:BlackBox {
