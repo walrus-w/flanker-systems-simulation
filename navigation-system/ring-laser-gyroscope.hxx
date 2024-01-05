@@ -58,41 +58,41 @@ RingLaserGyroscope::initialisationSequence() {
 
 class RingLaserGyroscope : public BlackBox {
 private:
-    double angularVelocity; // Angular velocity of the gyroscope
-    double ringRadius;      // Radius of the ring cavity    Currently unused
-    double laserWavelength = 632.8e-9; // Wavelength of Helium-Neon laser light    Currently unused
-    double interferenceFactor; // Factor affecting interference pattern (e.g., due to rotation)
+    double angularVelocity; // angular velocity of the gyroscope
+    double ringRadius;      // radius of the ring cavity -- currently unused
+    double laserWavelength = 632.8e-9; // wavelength of light emitted by Helium-Neon laser -- Currently unused
+    double interferenceFactor; // factor affecting interference pattern (e.g., due to rotation)
 
 public:
-    // Constructor
+    // constructor
     RingLaserGyroscope(double radius, double wavelength);
 
-    // Set angular velocity (rotation rate) of the gyroscope, degrees/second
-    // Velocity should probably be on the order of 75-100
+    // set angular velocity (rotation rate) of the gyroscope, degrees/second
+    // velocity should probably be on the order of 75-100
     void setAngularVelocity(double velocity);
 
-    // Simulate the gyroscope's behavior over a time period
+    // simulate the gyroscope's behavior over a time period
     void simulate(double time); // Override the virtual function
 
-    // Additional member functions specific to RingLaserGyroscope
+    // additional member functions specific to RingLaserGyroscope
 
 };
 
-// Constructor definition
+// constructor definition
 RingLaserGyroscope::RingLaserGyroscope(double radius, double wavelength)
         : angularVelocity(0.0), ringRadius(radius), laserWavelength(wavelength), interferenceFactor(1.0) {}
 
-// Set angular velocity (rotation rate) definition
+// set angular velocity (rotation rate) definition
 void RingLaserGyroscope::setAngularVelocity(double velocity) {
     angularVelocity = velocity;
 }
 
-// Simulate the gyroscope's behavior over a time period definition
+// simulate the gyroscope's behavior over a time period definition
 void RingLaserGyroscope::simulate(double time) {
-    // Update interference factor based on rotation
+    // update interference factor based on rotation
     interferenceFactor = std::cos(angularVelocity * time);
 
-    // Print simulated data or perform other actions based on the simulation
+    // print simulated data or perform other actions based on the simulation
     std::cout << "Simulated Gyroscope Data:\n"
               << "Angular Velocity: " << angularVelocity << " rad/s\n"
               << "Interference Factor: " << interferenceFactor << "\n"
@@ -100,14 +100,14 @@ void RingLaserGyroscope::simulate(double time) {
 }
 
 int main() {
-    // Create a RingLaserGyroscope object with specified radius and wavelength
+    // create a RingLaserGyroscope object with specified radius and wavelength
     RingLaserGyroscope gyroscope(1.0, 632.8e-9); // Example wavelength: He-Ne laser
 
-    // Set angular velocity for simulation
-    gyroscope.setAngularVelocity(0.1); // Example angular velocity: 0.1 rad/s
+    // set angular velocity for simulation
+    gyroscope.setAngularVelocity(0.1); // example angular velocity: 0.1 rad/s
 
-    // Simulate the gyroscope's behavior over a specified time period
-    gyroscope.simulate(5.0); // Example simulation time: 5 seconds
+    // simulate the gyroscope's behavior over a specified time period
+    gyroscope.simulate(5.0); // example simulation time: 5 seconds
 
     return 0;
 }
