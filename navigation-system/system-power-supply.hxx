@@ -11,21 +11,21 @@ public:
     // data members
 
     // function members
-    PowerSupply(float maximumCurrent)
+    PowerSupply(float maximumVoltage);
 
 private:
     // data members
     bool breakerClosed;
-    float currentCurrent;
-    float maxCurrent;
+    float currentVoltage;
+    float maxVoltage;
 
     // function members
 };
 
-PowerSupply::PowerSupply(float maximumCurrent) {
+PowerSupply::PowerSupply(float maximumVoltage) {
     breakerClosed = true;
-    currentCurrent = 0;
-    maxCurrent = maximumCurrent;
+    currentVoltage = 0;
+    maxVoltage = maximumVoltage;
 }
 
 #endif //SU_30_EFM_V2_7_3B_SYSTEM_POWER_SUPPLY_HXX

@@ -23,7 +23,6 @@ private:
     bool isOn;
     bool isReady;
     bool satelliteAntenna;
-    PowerSupply powerSup(float maxWattage);
 
     // function members
     virtual void initialisationSequence();
@@ -35,4 +34,3 @@ BlackBox::BlackBox() {
     isReady = false;
 }
 
-#endif //SU_30_EFM_V2_7_3B_BLACK_BOX_HXX
