@@ -20,6 +20,7 @@ public:
 
 private:
     // data members
+    bool isPowered;
     bool isOn;
     bool isReady;
     bool satelliteAntenna;

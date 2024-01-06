@@ -18,7 +18,7 @@ public:
     RingLaserGyroscope(double radius);
 
     // set angular velocity (rotation rate) of the gyroscope, degrees/second
-    // velocity should probably be on the order of 75-100
+    // velocity should probably be on the order of 75-100, as indicated for high-performance aircraft
     void setAngularVelocity(double velocity);
 
     // simulate the gyroscope's behavior over a time period
