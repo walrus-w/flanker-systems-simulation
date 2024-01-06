@@ -8,7 +8,7 @@
 #ifndef SU_30_EFM_V2_7_3B_BLACK_BOX_HXX
 #define SU_30_EFM_V2_7_3B_BLACK_BOX_HXX
 
-#include "navigation-system/system-power-supply.hxx"
+#include "system-power-supply.hxx"
 
 class BlackBox {
 
@@ -34,3 +34,4 @@ BlackBox::BlackBox() {
     isReady = false;
 }
 
+#endif //SU_30_EFM_V2_7_3B_BLACK_BOX_HXX

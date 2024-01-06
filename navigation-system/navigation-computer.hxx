@@ -5,7 +5,7 @@
 #ifndef SU_30_EFM_V2_7_3B_NAVIGATION_COMPUTER_HXX
 #define SU_30_EFM_V2_7_3B_NAVIGATION_COMPUTER_HXX
 
-#include "../black-box.hxx"
+#include "black-box.hxx"
 #include "inertial-navigation-system.hxx"
 
 class NavigationComputer:BlackBox {

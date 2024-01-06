@@ -10,7 +10,8 @@
 class DCPowerSupply:PowerSupply {
 
 public:
-    DCPowerSupply();
+
+    DCPowerSupply(int voltage);
 
 private:
 

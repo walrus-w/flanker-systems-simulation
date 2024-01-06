@@ -11,7 +11,7 @@ class ACPowerSupply:PowerSupply {
 
 public:
 
-        ACPowerSupply(voltage, frequency)
+        ACPowerSupply(int voltage, int frequency);
 
 private:
 

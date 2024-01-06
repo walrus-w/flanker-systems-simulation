@@ -11,7 +11,7 @@ public:
     // data members
 
     // function members
-    PowerSupply(float maximumVoltage);
+    PowerSupply(int maximumVoltage);
 
 private:
     // data members
@@ -22,8 +22,8 @@ private:
     // function members
 };
 
-PowerSupply::PowerSupply(float maximumVoltage) {
-    breakerClosed = true;
+PowerSupply::PowerSupply(int maximumVoltage) {
+    breakerClosed = false;
     currentVoltage = 0;
     maxVoltage = maximumVoltage;
 }
