@@ -5,6 +5,8 @@
 /*
  * Derived class from BlackBox
  * Initial implementation will be a simple representation of a modern INS, using three RLGs and three accelerometers.
+ * NavigationComputer class interfaces between INS and cockpit displays
+ * Pitot and static pressure measurements are passed through NavigationComputer for cockpit displays and instruments
  */
 
 #ifndef SU_30_EFM_V2_7_3B_INERTIAL_NAVIGATION_SYSTEM_HXX
@@ -25,7 +27,24 @@
 class InertialNavigationSystem:BlackBox {
 public:
 
-    InertialNavigationSystem(RingLaserGyroscope& pitch, RingLaserGyroscope& yaw, RingLaserGyroscope& roll);
+    // cold and dark cockpit without stored position constructor
+    // consider parameterizing all members in single constructor and initialise variables using cockpitInit function
+    InertialNavigationSystem(RingLaserGyroscope& rlgPitchArg, RingLaserGyroscope& rlgYawArg,
+                             RingLaserGyroscope& rlgRollArg, Accelerometer& aclXArg, Accelerometer& aclYArg,
+                             Accelerometer& aclZArg, GNSS& gnssArg, ACPowerSupply& acPowerArg, DCPowerSupply& dcPowerArg);
+
+    // cold and dark cockpit with stored position constructor
+    InertialNavigationSystem(RingLaserGyroscope& rlgPitchArg, RingLaserGyroscope& rlgYawArg,
+                             RingLaserGyroscope& rlgRollArg, Accelerometer& aclXArg, Accelerometer& aclYArg,
+                             Accelerometer& aclZArg, GNSS& gnssArg, ACPowerSupply& acPowerArg, DCPowerSupply& dcPowerArg,
+                             bool ready = true);
+
+    // hot ground start constructor
+    InertialNavigationSystem(RingLaserGyroscope& rlgPitchArg, RingLaserGyroscope& rlgYawArg,
+                             RingLaserGyroscope& rlgRollArg, Accelerometer& aclXArg, Accelerometer& aclYArg,
+                             Accelerometer& aclZArg, GNSS& gnssArg, ACPowerSupply& acPowerArg, DCPowerSupply& dcPowerArg,
+                             float latArg, float longArg, float currentCalculatedAltitude);
+
     std::chrono::seconds getAlignmentTime();
     float getCurrentLat();
     float getCurrentLong();
@@ -43,20 +62,21 @@ private:
     RingLaserGyroscope& rlgRoll;
     // accelerometers measuring changes in velocity in x, y and z planes
     // i.e. forward-aft, side-to-side and up-down respectively
-    Accelerometer aclX;
-    Accelerometer aclY;
-    Accelerometer aclZ;
+    Accelerometer& aclX;
+    Accelerometer& aclY;
+    Accelerometer& aclZ;
     //
-    GNSS gnss;
+    GNSS& gnss;
     // Su-27SK and MiG-29G documentation both show use of an AC and DC power supply for INS
     // Which is used to power what elements is still unclear; searching for format to translate Su-27SK tech manual
-    ACPowerSupply acPower;
-    DCPowerSupply dcPower;
+    ACPowerSupply& acPower; //400Hz figure from Anuva Technologies Su-30MKI cockpit displays
+    DCPowerSupply& dcPower;
 
     // positional and orientation variables
     float currentPosition;          // current position is stored in decimal degrees
     float currentLatitude;          // current lat/long of system. Initialised to nullptr
     float currentLongitude;
+    float currentCalculatedAltitude;
     float currentBaroAltitude;
     float currentRadarAltitude;
     float currentGroundSpeed;
@@ -114,15 +134,18 @@ private:
 };
 
 // constructor for cold and dark aircraft
-InertialNavigationSystem::InertialNavigationSystem(RingLaserGyroscope& pitch, RingLaserGyroscope& yaw, RingLaserGyroscope& roll)
-    : rlgPitch(pitch), rlgYaw(yaw), rlgRoll(roll),
-            aclX(), aclY(), aclZ(),
-            gnss(),
-            acPower(115, 400), dcPower(27),   //400Hz figure from Anuva Technologies Su-30MKI cockpit displays
-            currentPosition(0.0), alignmentTime(300), isReady(false), currentLatitude(0.0), currentLongitude(0.0), currentBaroAltitude(0.0),
-            currentRadarAltitude(0.0), currentGroundSpeed(0.0), currentTrueAirSpeed(0.0), currentIndicatedAirSpeed(0.0), currentCalibratedAirSpeed(0.0),
-            currentAngleOfBank(0.0), currentAngleOfPitch(0.0), currentAngleOfYaw(0.0), currentMagneticHeading(0), currentTrueHeading(0),
-            currentSpeedError(100), currentHeadingError(100), systemDamage(0) {}
+InertialNavigationSystem::InertialNavigationSystem(RingLaserGyroscope& rlgPitchArg, RingLaserGyroscope& rlgYawArg,
+    RingLaserGyroscope& rlgRollArg, Accelerometer& aclXArg, Accelerometer& aclYArg, Accelerometer& aclZArg, GNSS& gnssArg,
+    ACPowerSupply& acPowerArg, DCPowerSupply& dcPowerArg)
+        : rlgPitch(rlgPitchArg), rlgYaw(rlgYawArg), rlgRoll(rlgRollArg),
+          aclX(aclXArg), aclY(aclYArg), aclZ(aclZArg), gnss(gnssArg),
+          acPower(acPowerArg), dcPower(dcPowerArg),
+            currentPosition(0.0), alignmentTime(300), isReady(false), currentLatitude(0.0), currentLongitude(0.0), currentCalculatedAltitude(0.0),
+            currentBaroAltitude(0.0), currentRadarAltitude(0.0), currentGroundSpeed(0.0), currentTrueAirSpeed(0.0), currentIndicatedAirSpeed(0.0),
+            currentCalibratedAirSpeed(0.0), currentAngleOfBank(0.0), currentAngleOfPitch(0.0), currentAngleOfYaw(0.0), currentMagneticHeading(0),
+            currentTrueHeading(0), currentSpeedError(100), currentHeadingError(100), systemDamage(0) {}
+
+
 
 float InertialNavigationSystem::getCurrentLat() {
     return currentLatitude;
