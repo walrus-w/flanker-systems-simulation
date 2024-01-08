@@ -101,10 +101,15 @@ private:
     void setCurrentBaroAltitude(float altitude);
     void setCurrentHeading(int_least8_t heading);
 
+    // system initialisation functions
+    // parameters are placeholders pending API integration
+
+
+
     // navigation functions
     void updatePosition(); // function to update latitude and longitude based on heading and ground speed
     void estimateVelocityChange(float accelInX, float accelInY, float accelInZ);  // estimate velocity change using Kalman filter function
-    void estimatePositionChange();  // estimate position change using velocity change a
+    void estimatePositionChange();  // estimate position change using velocity change a Kalman filter
 
 };
 
