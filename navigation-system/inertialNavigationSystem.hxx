@@ -16,11 +16,11 @@
 #include <cstdint>
 #include <chrono>
 #include <cmath>
-#include "ring-laser-gyroscope.hxx"
-#include "black-box.hxx"
+#include "ringLaserGyroscope.hxx"
+#include "blackBox.hxx"
 #include "accelerometer.hxx"
-#include "ac-power-supply.hxx"
-#include "dc-power-supply.hxx"
+#include "acPowerSupply.hxx"
+#include "dcPowerSupply.hxx"
 #include "gnss.hxx"
 #include <Eigen/Dense>  // Include Eigen library for linear algebra operations
 

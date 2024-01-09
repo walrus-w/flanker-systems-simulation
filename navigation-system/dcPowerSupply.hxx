@@ -5,7 +5,7 @@
 #ifndef SU_30_EFM_V2_7_3B_DCPOWERSUPPLY_HXX
 #define SU_30_EFM_V2_7_3B_DCPOWERSUPPLY_HXX
 
-#include "system-power-supply.hxx"
+#include "systemPowerSupply.hxx"
 
 class DCPowerSupply:PowerSupply {
 

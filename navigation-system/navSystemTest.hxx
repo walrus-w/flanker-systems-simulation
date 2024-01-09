@@ -10,7 +10,7 @@
 #ifndef FLANKER_SYSTEMS_SIMULATION_NAV_SYSTEM_TEST_HXX
 #define FLANKER_SYSTEMS_SIMULATION_NAV_SYSTEM_TEST_HXX
 
-#include "inertial-navigation-system.hxx"
+#include "inertialNavigationSystem.hxx"
 
 class NavSystemTest {
 public:

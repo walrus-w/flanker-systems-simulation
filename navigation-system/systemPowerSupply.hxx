@@ -29,6 +29,7 @@ protected:
     virtual void onBreakerCloser();
 };
 
+
 // cold and dark start constructor
 PowerSupply::PowerSupply(int maximumVoltage)
     : maxVoltage(maximumVoltage), breakerClosed(false), isSupplyingPower(false), currentDemand(0.0), currentVoltage(0.0) {}
