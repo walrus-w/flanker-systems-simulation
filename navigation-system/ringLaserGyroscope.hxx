@@ -19,7 +19,7 @@ private:
     // data members
     float_t angularVelocity = 95; // degrees/s - design angular velocity of the gyroscope,
                                   // estimated from public data which suggests aircraft LRGs typically operate at 70-100 degrees/s
-                                  // higher angular velocity = greater accuracy
+                                  // higher angular velocity = finer accuracy
     float_t currentAngularVelocity; // present rate of rotation i.e. 0 when system is off and 95 when ready
     float_t interferenceFactor; // factor affecting interference pattern (e.g., due to rotation)
     float_t currentAngle;
@@ -52,7 +52,7 @@ void RingLaserGyroscope::applyCorrection() {
 
 // called by INS each time it updates (10 millisecond intervals), calculates a random calculation error via generateRandomNoise
 // interferenceFactor is multiplied by error and rawInput (i.e. input angle of pitch/roll/yaw) is 'corrected' by adding the value of error
-// calls applyCorrection, which
+// calls applyCorrection, which reduces the value of interference factor
 float_t RingLaserGyroscope::calculateAngularChange(float_t rawInput) {
     float_t error = generateRandomNoise(-0.1, 0.1);
     error *= interferenceFactor; // apply interference factor to error
