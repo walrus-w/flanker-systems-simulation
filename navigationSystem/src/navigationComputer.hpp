@@ -11,8 +11,8 @@
 #define SU_30_EFM_V2_7_3B_NAVIGATION_COMPUTER_HXX
 
 #include <vector>
-#include "blackBox.hxx"
-#include "BII_9.hxx"
+#include "blackBox.hpp"
+#include "BII_9.hpp"
 
 
 struct waypoint {
@@ -31,6 +31,8 @@ public:
     int setRadioNavFrequency(float_t frequency);   // set TACAN or RSBN frequency
                                                    // will interface with ILS script from A-29B mod
     void updateINS();
+    // placeholder functions; declarations will need refactor depending upon availability of EFM API
+    // if EFM API is unavailable, these functions will be passed data from lua environment
     int returnLatitude();
     int returnLongitude();
     int passInLatitude();

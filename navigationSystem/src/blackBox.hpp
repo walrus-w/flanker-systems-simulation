@@ -8,7 +8,7 @@
 #ifndef SU_30_EFM_V2_7_3B_BLACK_BOX_HXX
 #define SU_30_EFM_V2_7_3B_BLACK_BOX_HXX
 
-#include "systemPowerSupply.hxx"
+#include "systemPowerSupply.hpp"
 
 class BlackBox {
 

@@ -5,7 +5,7 @@
 #ifndef SU_30_EFM_V2_7_3B_AC_POWER_SUPPLY_HXX
 #define SU_30_EFM_V2_7_3B_AC_POWER_SUPPLY_HXX
 
-#include "systemPowerSupply.hxx"
+#include "systemPowerSupply.hpp"
 
 class ACPowerSupply:PowerSupply {
 
