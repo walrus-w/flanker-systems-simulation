@@ -35,13 +35,5 @@ private:
     float measurementError;
 };
 
-Accelerometer::Accelerometer() {
-    measurementError = 0.1; // arbitrary value pending further research
-}
-
-// calculate single-axis linear acceleration
-float Accelerometer::getAcceleration() {
-    return previousVelocity = (currentVelocity - previousVelocity)/interval;
-}
 
 #endif //SU_30_EFM_V2_7_3B_ACCELEROMETER_HXX

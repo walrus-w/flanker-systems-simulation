@@ -51,13 +51,5 @@ private:
 
 };
 
-int NavigationComputer::returnLatitude() {
-    return ins.getCurrentLat();
-}
-
-int NavigationComputer::returnLongitude() {
-    return ins.getCurrentLong();
-}
-
 
 #endif //SU_30_EFM_V2_7_3B_NAVIGATION_COMPUTER_HXX

@@ -31,8 +31,6 @@ private:
 
 };
 
-AirDataComputer::AirDataComputer() {
 
-}
 
 #endif //SU_30_EFM_V2_7_3B_AIR_DATA_COMPUTER_HXX

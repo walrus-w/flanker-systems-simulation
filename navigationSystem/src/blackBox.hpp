@@ -30,7 +30,6 @@ protected:
 
 };
 
-BlackBox::BlackBox()
-    : isPowered(false), isOn(false), isReady(false){}
+
 
 #endif //SU_30_EFM_V2_7_3B_BLACK_BOX_HXX
