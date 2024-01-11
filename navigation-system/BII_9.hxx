@@ -137,7 +137,7 @@ private:
 InertialNavigationSystem::InertialNavigationSystem(RingLaserGyroscope& rlgPitchArg, RingLaserGyroscope& rlgYawArg,
     RingLaserGyroscope& rlgRollArg, Accelerometer& aclXArg, Accelerometer& aclYArg, Accelerometer& aclZArg, GNSS& gnssArg,
     ACPowerSupply& acPowerArg, DCPowerSupply& dcPowerArg)
-        : rlgPitch(rlgPitchArg), rlgYaw(rlgYawArg), rlgRoll(rlgRollArg),
+        : BlackBox(), rlgPitch(rlgPitchArg), rlgYaw(rlgYawArg), rlgRoll(rlgRollArg),
           aclX(aclXArg), aclY(aclYArg), aclZ(aclZArg), gnss(gnssArg),
           acPower(acPowerArg), dcPower(dcPowerArg),
             currentPosition(0.0), alignmentTime(300), isReady(false), currentLatitude(0.0), currentLongitude(0.0), currentCalculatedAltitude(0.0),
@@ -204,20 +204,22 @@ void InertialNavigationSystem::updatePosition() {
     currentLongitude += deltaLongitude; // update longitude
 }
 
+// initialises a 32nd order Kalman filter matrix as described in available documentation
+// current implementation uses six elements of the vector, but the implementation supports extension to include additional arguments
 void InertialNavigationSystem::initializeKalmanFilter() {
     // initialize Kalman filter matrices and parameters
-    state = Eigen::MatrixXd::Zero(5, 1); // initialize state vector to zeros
-    covariance = Eigen::MatrixXd::Identity(5, 5); // initialize covariance matrix to identity
+    state = Eigen::MatrixXd::Zero(32, 1); // initialize state vector to zeros
+    covariance = Eigen::MatrixXd::Identity(32, 32); // initialize covariance matrix to identity
 
     // Set Kalman filter parameters
-    A = Eigen::MatrixXd::Identity(5, 5); // state transition matrix
-    H = Eigen::MatrixXd::Identity(5, 5); // measurement matrix
+    A = Eigen::MatrixXd::Identity(32, 32); // state transition matrix
+    H = Eigen::MatrixXd::Identity(32, 32); // measurement matrix
 
     // set very low process noise covariance to simulate high accuracy in system dynamics
-    Q = Eigen::MatrixXd::Identity(5, 5) * 1e-6;
+    Q = Eigen::MatrixXd::Identity(32, 32) * 1e-6;
 
     // set very low measurement noise covariance to simulate high accuracy in sensor measurements
-    R = Eigen::MatrixXd::Identity(5, 5) * 1e-6;
+    R = Eigen::MatrixXd::Identity(32, 32) * 1e-6;
 }
 
 void InertialNavigationSystem::estimateVelocityChange(float accelInX, float accelInY, float accelInZ) {
@@ -231,15 +233,15 @@ void InertialNavigationSystem::estimateVelocityChange(float accelInX, float acce
     state(1, 0) += state(3, 0) * dt;  // update longitude based on current ground speed
 
     // Kalman filter update step
-    Eigen::MatrixXd measurement(6, 1);  // measurement vector [latitude, longitude, ground speed, accelInX, accelInY, accelInZ]
-    measurement << currentLatitude, currentLongitude, currentGroundSpeed, accelInX, accelInY, accelInZ;
+    Eigen::MatrixXd measurement(32, 1);  // measurement vector [latitude, longitude, ground speed, accelInX, accelInY, accelInZ]
+    measurement << currentLatitude, currentLongitude, currentGroundSpeed, accelInX, accelInY, accelInZ, Eigen::MatrixXd::Zero(26, 1);
     Eigen::MatrixXd innovation = measurement - H * state;  // Innovation
     Eigen::MatrixXd innovationCovariance = H * covariance * H.transpose() + R;  // Innovation covariance
     Eigen::MatrixXd kalmanGain = covariance * H.transpose() * innovationCovariance.inverse();  // Kalman gain
 
     // Update state and covariance
     state = state + kalmanGain * innovation;
-    covariance = (Eigen::MatrixXd::Identity(6, 6) - kalmanGain * H) * covariance;
+    covariance = (Eigen::MatrixXd::Identity(32, 32) - kalmanGain * H) * covariance;
 
     // Update current latitude, longitude, and ground speed with Kalman filter estimates
     currentLatitude = state(0, 0);
@@ -266,7 +268,7 @@ void InertialNavigationSystem::estimatePositionChange() {
     state(0, 0) += state(2, 0) * dt;  // Update latitude based on current ground speed
     state(1, 0) += state(3, 0) * dt;  // Update longitude based on current ground speed
 
-    // Note: This is a simple models and variables will likely need adjustment on the basis of testing
+    // Note: This is a simple model and variables will likely need adjustment on the basis of testing
 }
 
 #endif //SU_30_EFM_V2_7_3B_INERTIAL_NAVIGATION_SYSTEM_HXX
