@@ -5,9 +5,9 @@
 #include "BII_9.hpp"
 
 // constructor for cold and dark aircraft
-InertialNavigationSystem::InertialNavigationSystem(RingLaserGyroscope& rlgPitchArg, RingLaserGyroscope& rlgYawArg,
-                                                   RingLaserGyroscope& rlgRollArg, Accelerometer& aclXArg, Accelerometer& aclYArg, Accelerometer& aclZArg, GNSS& gnssArg,
-                                                   ACPowerSupply& acPowerArg, DCPowerSupply& dcPowerArg)
+BII_9::BII_9(RingLaserGyroscope& rlgPitchArg, RingLaserGyroscope& rlgYawArg,
+             RingLaserGyroscope& rlgRollArg, QuartzAccelerometer& aclXArg, QuartzAccelerometer& aclYArg, QuartzAccelerometer& aclZArg, GNSS& gnssArg,
+             ACPowerSupply& acPowerArg, DCPowerSupply& dcPowerArg)
         : BlackBox(), rlgPitch(rlgPitchArg), rlgYaw(rlgYawArg), rlgRoll(rlgRollArg),
           aclX(aclXArg), aclY(aclYArg), aclZ(aclZArg), gnss(gnssArg),
           acPower(acPowerArg), dcPower(dcPowerArg),
@@ -17,57 +17,56 @@ InertialNavigationSystem::InertialNavigationSystem(RingLaserGyroscope& rlgPitchA
           currentTrueHeading(0), currentSpeedError(100), currentHeadingError(100), systemDamage(0) {}
 
 
-
-float InertialNavigationSystem::getCurrentLat() {
+float BII_9::getCurrentLat() const {
     return currentLatitude;
 }
 
-void InertialNavigationSystem::setLatitude(float lat) {
+void BII_9::setLatitude(float lat) {
     currentLatitude = lat;
 }
 
-float InertialNavigationSystem::getCurrentLong() {
+float BII_9::getCurrentLong() const {
     return currentLongitude;
 }
 
-void InertialNavigationSystem::setLongitude(float longitude) {
+void BII_9::setLongitude(float longitude) {
     currentLongitude = longitude;
 }
 
-float InertialNavigationSystem::getCurrentGroundSpeed() {
+float BII_9::getCurrentGroundSpeed() const {
     return currentGroundSpeed;
 }
 
-void InertialNavigationSystem::setCurrentGroundSpeed(float speed) {
+void BII_9::setCurrentGroundSpeed(float speed) {
     currentGroundSpeed = speed;
 }
 
-float InertialNavigationSystem::getCurrentRadarAltitude() {
+float BII_9::getCurrentRadarAltitude() const {
     return currentRadarAltitude;
 }
 
-void InertialNavigationSystem::setCurrentRadarAltitude(float altitude) {
+void BII_9::setCurrentRadarAltitude(float altitude) {
     currentRadarAltitude = altitude;
 }
 
-float InertialNavigationSystem::getCurrentBaroAltitude() {
+float BII_9::getCurrentBaroAltitude() const {
     return currentBaroAltitude;
 }
 
-void InertialNavigationSystem::setCurrentBaroAltitude(float altitude) {
+void BII_9::setCurrentBaroAltitude(float altitude) {
     currentBaroAltitude = altitude;
 }
 
-int_fast8_t InertialNavigationSystem::getCurrentHeading() {
+int_fast8_t BII_9::getCurrentHeading() const {
     return currentMagneticHeading;
 }
 
-void InertialNavigationSystem::setCurrentHeading(int_least8_t heading) {
+void BII_9::setCurrentHeading(int_least8_t heading) {
     currentMagneticHeading = heading;
 }
 
 // function to update latitude and longitude based on heading and ground speed
-void InertialNavigationSystem::updatePosition() {
+void BII_9::updatePosition() {
     float headingRad = currentTrueHeading * M_PI / 180.0;   //true heading converted to radians
     float deltaLatitude = currentGroundSpeed * refreshInterval.count() / 1000.0 * std::sin(headingRad); // calculate delta lat
     currentLatitude += deltaLatitude;   // update latitude
@@ -75,7 +74,16 @@ void InertialNavigationSystem::updatePosition() {
     currentLongitude += deltaLongitude; // update longitude
 }
 
-void InertialNavigationSystem::initializeNoiseCovarianceMatrices() {
+// initializes a MatrixXd object with either 0 or identity matrix
+// depending on the 'initializeToZero' flag and optionally scales it by scaleFactor
+Eigen::MatrixXd BII_9::initializeMatrix(bool initializeToZero, int rows, int cols, float scaleFactor = 1) {
+    if (initializeToZero)
+        return Eigen::MatrixXd::Zero(rows, cols);
+    else
+        return Eigen::MatrixXd::Identity(rows, cols) * scaleFactor;
+}
+
+void BII_9::initializeNoiseCovarianceMatrices() {
     // Process noise parameters (standard deviations)
     float pos_stddev_km_hr = 1.85;   //1.85 km/hr for position
     float speed_stddev_m_s = 1.0;    //1 m/s for ground speed
@@ -96,40 +104,31 @@ void InertialNavigationSystem::initializeNoiseCovarianceMatrices() {
     float measure_noise_ang = 0.01; // Angle measurement noise
 
     // Typically for measurement noise covariance R you would transform stddev to variance by squaring it
-    // Here it is assumed stddev^2 is applied directly to give a good weight to each parameters
+    // Here it is assumed stddev^2 is applied directly to give a good weight to each parameter
     R.block(0, 0, 3, 3) = measure_noise_pos * measure_noise_pos * Eigen::MatrixXd::Identity(3, 3); //applying to position
     R.block(3, 3, 2, 2) = measure_noise_vel * measure_noise_vel * Eigen::MatrixXd::Identity(2, 2); //applying to velocity
     R.block(5, 5, 2, 2) = measure_noise_ang * measure_noise_ang * Eigen::MatrixXd::Identity(2, 2); //applying to angles
 }
 
-// initializes a MatrixXd object with either 0 or identity matrix
-// depending on the 'initializeToZero' flag and optionally scales it by scaleFactor
-Eigen::MatrixXd initializeMatrix(bool initializeToZero, int rows, int cols, double scaleFactor = 1.0) {
-    if (initializeToZero)
-        return Eigen::MatrixXd::Zero(rows, cols);
-    else
-        return Eigen::MatrixXd::Identity(rows, cols) * scaleFactor;
-}
-
-
-// initialises a 32nd order Kalman filter matrix as described in available documentation
+// initialises a 9 x 9 Kalman filter matrix;
+// OEM documentation describes using a 32nd order filter so clearly there are a large number of input channels of which information is not available
 // current implementation uses six elements of the vector, but the implementation supports extension to include additional arguments
-void InertialNavigationSystem::initializeKalmanFilter() {
+void BII_9::initializeKalmanFilter() {
     // initialize state vector to zeros
-    state = Eigen::MatrixXd::Zero(7, 1);
+    state = Eigen::MatrixXd::Zero(9, 1);
 
     // Initialize covariance matrix with high initial uncertainty (identity matrix)
-    covariance = Eigen::MatrixXd::Identity(7, 7);
+    covariance = Eigen::MatrixXd::Identity(9, 9);
 
     // Initialize transition and measurement matrices
-    A = Eigen::MatrixXd::Identity(7, 7);
-    H = Eigen::MatrixXd::Identity(7, 7);
+    A = Eigen::MatrixXd::Identity(9, 9);
+    H = Eigen::MatrixXd::Identity(9, 9);
 
     // Initialize process noise covariance Q and measurement noise covariance R
     initializeNoiseCovarianceMatrices();
 }
 
-void InertialNavigationSystem::updateWithGNSSMeasurements(Eigen::VectorXd& z) {
+void BII_9::updateWithGNSSMeasurements(Eigen::VectorXd& z) {
     // Calculate the innovation vector (difference between observed and predicted state)
     Eigen::VectorXd y = z - H * state;
 
@@ -147,15 +146,15 @@ void InertialNavigationSystem::updateWithGNSSMeasurements(Eigen::VectorXd& z) {
     covariance = (Eigen::MatrixXd::Identity(size, size) - K * H) * covariance;
 }
 
-void InertialNavigationSystem::updateStateWithGyroMeasurement(float_t gyroPitchRate, float_t gyroYawRate, float_t gyroRollRate) {
+void BII_9::updateStateWithGyroMeasurement(float_t gyroPitchRate, float_t gyroYawRate, float_t gyroRollRate) {
     state(6) += gyroPitchRate * dt;  // Update pitch
     state(7) += gyroYawRate * dt;    // Update yaw
     state(8) += gyroRollRate * dt;   // Update roll
 }
 
-void InertialNavigationSystem::estimateStateChange() {
+void BII_9::estimateStateChange() {
     // Updating with GNSS Measurements
-    updateStateWithGNSSMeasurement();
+    updateWithGNSSMeasurements(Eigen::VectorXd& z);
 
     // Compute accelerometer measurements
     float accelInX = aclX.getAcceleration();
@@ -176,7 +175,7 @@ void InertialNavigationSystem::estimateStateChange() {
     updateStateWithGyroMeasurement(gyroPitchRate, gyroYawRate, gyroRollRate);
 }
 
-void InertialNavigationSystem::estimateVelocityChange(float accelInX, float accelInY, float accelInZ) {
+void BII_9::estimateVelocityChange(float accelInX, float accelInY, float accelInZ) {
     predictStep();
     updateStateWithAccelMeasurement(accelInX, accelInY, accelInZ);
     updateStep();
@@ -184,12 +183,12 @@ void InertialNavigationSystem::estimateVelocityChange(float accelInX, float acce
     updateStateWithGyroMeasurement(float_t gyroPitchRate, float_t gyroYawRate, float_t gyroRollRate);
 }
 
-void InertialNavigationSystem::predictStep() {
+void BII_9::predictStep() {
     state = A * state;             // predict state
     covariance = A * covariance * A.transpose() + Q;  // predict covariance
 }
 
-void InertialNavigationSystem::updateStateWithAccelMeasurement(float_t accelInX, float_t accelInY, float_t accelInZ) {
+void BII_9::updateStateWithAccelMeasurement(float_t accelInX, float_t accelInY, float_t accelInZ) {
     // Update velocity by integrating acceleration
     state(3) += accelInX * dt;  // Update velocity X
     state(4) += accelInY * dt;  // Update velocity Y
@@ -200,7 +199,7 @@ void InertialNavigationSystem::updateStateWithAccelMeasurement(float_t accelInX,
     state(1) += state(4) * dt;  // Update longitude (considering velocity in Y-direction corresponds to longitude
     state(2) += state(5) * dt;  // Update altitude (considering velocity in Z-direction corresponds to altitude)
 }
-void InertialNavigationSystem::updateStep() {
+void BII_9::updateStep() {
     Eigen::MatrixXd measurement(32, 1);  // measurement vector [latitude, longitude, ground speed, accelInX, accelInY, accelInZ]
     measurement << currentLatitude, currentLongitude, currentGroundSpeed, accelInX, accelInY, accelInZ, Eigen::MatrixXd::Zero(26, 1);
     Eigen::MatrixXd innovation = measurement - H * state;  // Innovation
@@ -212,14 +211,14 @@ void InertialNavigationSystem::updateStep() {
     covariance = (Eigen::MatrixXd::Identity(32, 32) - kalmanGain * H) * covariance;
 }
 
-void InertialNavigationSystem::updateCurrentVariables() {
+void BII_9::updateCurrentVariables() {
     // Update current latitude, longitude, and ground speed with Kalman filter estimates
     currentLatitude = state(0, 0);
     currentLongitude = state(1, 0);
     currentGroundSpeed = state(2, 0);
 }
 
-void InertialNavigationSystem::estimatePositionChange() {
+void BII_9::estimatePositionChange() {
 
     // estimates change in position using accelerations and by updating states with Kalman Filter predictions
     // first estimates the velocity change using the accelerations in XYZ directions
@@ -237,3 +236,5 @@ void InertialNavigationSystem::estimatePositionChange() {
     state(1, 0) += state(3, 0) * dt;  // Update longitude based on current ground speed
 
 }
+
+// unit tests

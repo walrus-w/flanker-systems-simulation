@@ -27,34 +27,34 @@
 #include "gnss.hpp"
 #include <Eigen/Dense> // Include Eigen library for linear algebra operations
 
-class InertialNavigationSystem:BlackBox {
+class BII_9: BlackBox {
 public:
 
     // cold and dark cockpit without stored position constructor
     // consider parameterizing all members in single constructor and initialise variables using cockpitInit function
-    InertialNavigationSystem(RingLaserGyroscope& rlgPitchArg, RingLaserGyroscope& rlgYawArg,
-                             RingLaserGyroscope& rlgRollArg, Accelerometer& aclXArg, Accelerometer& aclYArg,
-                             Accelerometer& aclZArg, GNSS& gnssArg, ACPowerSupply& acPowerArg, DCPowerSupply& dcPowerArg);
+    BII_9(RingLaserGyroscope& rlgPitchArg, RingLaserGyroscope& rlgYawArg,
+          RingLaserGyroscope& rlgRollArg, QuartzAccelerometer& aclXArg, QuartzAccelerometer& aclYArg,
+          QuartzAccelerometer& aclZArg, GNSS& gnssArg, ACPowerSupply& acPowerArg, DCPowerSupply& dcPowerArg);
 
     // cold and dark cockpit with stored position constructor
-    InertialNavigationSystem(RingLaserGyroscope& rlgPitchArg, RingLaserGyroscope& rlgYawArg,
-                             RingLaserGyroscope& rlgRollArg, Accelerometer& aclXArg, Accelerometer& aclYArg,
-                             Accelerometer& aclZArg, GNSS& gnssArg, ACPowerSupply& acPowerArg, DCPowerSupply& dcPowerArg,
-                             bool ready = true);
+    BII_9(RingLaserGyroscope& rlgPitchArg, RingLaserGyroscope& rlgYawArg,
+          RingLaserGyroscope& rlgRollArg, QuartzAccelerometer& aclXArg, QuartzAccelerometer& aclYArg,
+          QuartzAccelerometer& aclZArg, GNSS& gnssArg, ACPowerSupply& acPowerArg, DCPowerSupply& dcPowerArg,
+          bool ready = true);
 
     // hot ground start constructor
-    InertialNavigationSystem(RingLaserGyroscope& rlgPitchArg, RingLaserGyroscope& rlgYawArg,
-                             RingLaserGyroscope& rlgRollArg, Accelerometer& aclXArg, Accelerometer& aclYArg,
-                             Accelerometer& aclZArg, GNSS& gnssArg, ACPowerSupply& acPowerArg, DCPowerSupply& dcPowerArg,
-                             float latArg, float longArg, float currentCalculatedAltitude);
+    BII_9(RingLaserGyroscope& rlgPitchArg, RingLaserGyroscope& rlgYawArg,
+          RingLaserGyroscope& rlgRollArg, QuartzAccelerometer& aclXArg, QuartzAccelerometer& aclYArg,
+          QuartzAccelerometer& aclZArg, GNSS& gnssArg, ACPowerSupply& acPowerArg, DCPowerSupply& dcPowerArg,
+          float latArg, float longArg, float currentCalculatedAltitude);
 
     std::chrono::seconds getAlignmentTime();
-    float getCurrentLat();
-    float getCurrentLong();
-    float getCurrentGroundSpeed();
-    float getCurrentRadarAltitude();
-    float getCurrentBaroAltitude();
-    int_fast8_t getCurrentHeading();
+    [[nodiscard]] float getCurrentLat() const;
+    [[nodiscard]] float getCurrentLong() const;
+    [[nodiscard]] float getCurrentGroundSpeed() const;
+    [[nodiscard]] float getCurrentRadarAltitude() const;
+    [[nodiscard]] float getCurrentBaroAltitude() const;
+    [[nodiscard]] int_fast8_t getCurrentHeading() const;
 
 private:
 
@@ -65,9 +65,9 @@ private:
     RingLaserGyroscope& rlgRoll;
     // accelerometers measuring changes in velocity in x, y and z planes
     // i.e. forward-aft, side-to-side and up-down respectively
-    Accelerometer& aclX;
-    Accelerometer& aclY;
-    Accelerometer& aclZ;
+    QuartzAccelerometer& aclX;
+    QuartzAccelerometer& aclY;
+    QuartzAccelerometer& aclZ;
     //
     GNSS& gnss;
     // Su-27SK and MiG-29G documentation both show use of an AC and DC power supply for INS
@@ -110,7 +110,12 @@ private:
     uint_least8_t systemDamage;         // placeholder, not presently used
 
     // interface variables
-    const std::chrono::milliseconds refreshInterval = std::chrono::milliseconds(10);;  // interval between system state updates; 100 times per second
+    const std::chrono::milliseconds refreshInterval = std::chrono::milliseconds(20);;  // interval between system state updates; 100 times per second
+
+    // physical constants
+    // mean Earth radius in meters
+    const float Re = 6371000;
+
 
     // function members
     // helper functions
@@ -129,9 +134,10 @@ private:
 
 
     // Kalman filter implementation functions
-    const float dt = refreshInterval.count() / 20.0; // Time step in 20 ms intervals
+    const long dt = refreshInterval.count() / 20.0; // Time step in 20 ms intervals
     void initializeNoiseCovarianceMatrices(); // Process noise parameters (standard deviations)
     void initializeKalmanFilter();   // initialises Kalman filter variables to simulate very low uncertainty in system
+    Eigen::MatrixXd initializeMatrix(bool initializeToZero, int rows, int cols, double scaleFactor = 1.0);
     void updateWithGNSSMeasurements(Eigen::VectorXd& z);
     void estimateStateChange();
     void estimateVelocityChange(float accelInX, float accelInY, float accelInZ);  // estimate velocity change using Kalman filter function

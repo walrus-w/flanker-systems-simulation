@@ -4,11 +4,11 @@
 
 #include "accelerometer.hpp"
 
-Accelerometer::Accelerometer() {
+QuartzAccelerometer::QuartzAccelerometer() {
     measurementError = 0.1; // arbitrary value pending further research
 }
 
 // calculate single-axis linear acceleration
-float Accelerometer::getAcceleration() {
+float QuartzAccelerometer::getAcceleration() {
     return previousVelocity = (currentVelocity - previousVelocity)/interval;
 }

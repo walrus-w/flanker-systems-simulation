@@ -9,15 +9,15 @@
 #include <iostream>
 
 /**
- * @class Accelerometer
+ * @class QuartzAccelerometer
  * @brief This class represents an accelerometer sensor.
  *
- * The Accelerometer class is used to calculate acceleration based on velocity and time interval.
+ * The QuartzAccelerometer class is used to calculate acceleration based on velocity and time interval.
  */
-class Accelerometer {
+class QuartzAccelerometer {
 
 public:
-    Accelerometer();
+    QuartzAccelerometer();
     /**
      * @brief Get the acceleration calculated based on the previous and current velocity and the time interval.
      *

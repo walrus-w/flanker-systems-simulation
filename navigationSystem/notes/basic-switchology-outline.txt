@@ -40,7 +40,7 @@ class FlankerAvionics   initially only concerned with input, processing and disp
     data members
         class INS   initial implementation will be very simplistic
             class RLG   " "
-            class Accelerometer
+            class QuartzAccelerometer
         class AirDataComputer
         class PS5D
         class PS5D-Interface

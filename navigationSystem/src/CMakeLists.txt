@@ -19,7 +19,16 @@ file(GLOB SOURCES "src/*.hpp"
 )
 
 add_executable(navSystem main.cpp accelerometer.hpp acPowerSupply.hpp airDataComputer.hpp BII_9.hpp blackBox.hpp dcPowerSupply.hpp
-                gnss.hpp navigationComputer.hpp navSystemTest.hpp ringLaserGyroscopeV2.hpp systemPowerSupply.hpp)
+                gnss.hpp navigationComputer.hpp navSystemTest.hpp ringLaserGyroscopeV2.hpp systemPowerSupply.hpp
+        BII_9.cpp
+        quartzAccelerometer.cpp
+        acPowerSupply.cpp
+        airDataComputer.cpp
+        blackBox.cpp
+        gnss.cpp
+        navigationComputer.cpp
+        ringLaserGyroscopeV2.cpp
+        systemPowerSupply.cpp)
 
 set_target_properties(navSystem PROPERTIES
         CXX_STANDARD 20

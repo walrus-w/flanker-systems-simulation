@@ -19,7 +19,7 @@ public:
 
 private:
 
-    InertialNavigationSystem testINS;
+    BII_9 testINS;
 
 };
 

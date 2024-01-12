@@ -45,7 +45,7 @@ public:
     int passInAngleYaw();
 
 private:
-    InertialNavigationSystem ins;
+    BII_9 ins;
     std::vector<waypoint> waypointStorage;
     const waypoint bullseye;
 
