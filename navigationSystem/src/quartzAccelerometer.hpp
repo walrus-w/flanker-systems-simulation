@@ -26,13 +26,13 @@ public:
      *
      * @return The calculated acceleration value.
      */
-    float getAcceleration();
+    double getAcceleration();
 
 private:
-    float currentVelocity;
-    float previousVelocity;
+    double currentVelocity;
+    double previousVelocity;
     int interval;
-    float measurementError;
+    double measurementError;
 };
 
 

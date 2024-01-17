@@ -21,7 +21,7 @@
 #include <cmath>
 #include "ringLaserGyroscopeV2.hpp"
 #include "blackBox.hpp"
-#include "accelerometer.hpp"
+#include "quartzAccelerometer.hpp"
 #include "acPowerSupply.hpp"
 #include "dcPowerSupply.hpp"
 #include "gnss.hpp"
@@ -46,15 +46,15 @@ public:
     BII_9(RingLaserGyroscope& rlgPitchArg, RingLaserGyroscope& rlgYawArg,
           RingLaserGyroscope& rlgRollArg, QuartzAccelerometer& aclXArg, QuartzAccelerometer& aclYArg,
           QuartzAccelerometer& aclZArg, GNSS& gnssArg, ACPowerSupply& acPowerArg, DCPowerSupply& dcPowerArg,
-          float latArg, float longArg, float currentCalculatedAltitude);
+          double latArg, double longArg, double currentCalculatedAltitude);
 
     std::chrono::seconds getAlignmentTime();
-    [[nodiscard]] float getCurrentLat() const;
-    [[nodiscard]] float getCurrentLong() const;
-    [[nodiscard]] float getCurrentGroundSpeed() const;
-    [[nodiscard]] float getCurrentRadarAltitude() const;
-    [[nodiscard]] float getCurrentBaroAltitude() const;
-    [[nodiscard]] int_fast8_t getCurrentHeading() const;
+    [[nodiscard]] double getCurrentLat() const;
+    [[nodiscard]] double getCurrentLong() const;
+    [[nodiscard]] double getCurrentGroundSpeed() const;
+    [[nodiscard]] double getCurrentRadarAltitude() const;
+    [[nodiscard]] double getCurrentBaroAltitude() const;
+    [[nodiscard]] double getCurrentHeading() const;
 
 private:
 
@@ -76,26 +76,26 @@ private:
     DCPowerSupply& dcPower;
 
     // positional and orientation variables
-    float currentPosition;          // current position is stored in decimal degrees
-    float currentLatitude;          // current lat/long of system. Initialised to nullptr
-    float currentLongitude;
-    float currentCalculatedAltitude;
-    float currentBaroAltitude;
-    float currentRadarAltitude;
-    float currentGroundSpeed;
-    float currentTrueAirSpeed;
-    float currentIndicatedAirSpeed;
-    float currentCalibratedAirSpeed;
-    float currentAngleOfBank;
-    float currentAngleOfPitch;
-    float currentAngleOfYaw;
-    uint_least8_t currentMagneticHeading;
-    uint_least8_t currentTrueHeading;
-    uint_least8_t currentSpeedError;    // initialised to an arbitrary maximum value, which decreases as alignment time increases
-    uint_least8_t currentHeadingError;  // error will gradually accumulate post-alignment, unless corrected via satellite or (potentially) radar fix
+    double currentPosition;          // current position is stored in decimal degrees
+    double currentLatitude;          // current lat/long of system. Initialised to nullptr
+    double currentLongitude;
+    double currentCalculatedAltitude;
+    double currentBaroAltitude;
+    double currentRadarAltitude;
+    double currentGroundSpeed;
+    double currentTrueAirSpeed;
+    double currentIndicatedAirSpeed;
+    double currentCalibratedAirSpeed;
+    double currentAngleOfBank;
+    double currentAngleOfPitch;
+    double currentAngleOfYaw;
+    double currentMagneticHeading;
+    double currentTrueHeading;
+    double currentSpeedError;    // initialised to an arbitrary maximum value, which decreases as alignment time increases
+    double currentHeadingError;  // error will gradually accumulate post-alignment, unless corrected via satellite or (potentially) radar fix
 
     // Kalman Filter variables
-    Eigen::MatrixXd state;    // State vector [latitude, longitude, ground speed, heading]
+    Eigen::MatrixXd state;    // State vector [latitude, longitude, ground speedX, heading]
     Eigen::MatrixXd covariance; // Covariance matrix
 
     // Kalman filter function parameters
@@ -107,26 +107,26 @@ private:
     // physical system variables
     std::chrono::seconds alignmentTime;          // time remaining for full alignment of INS
     bool isReady;                   // true if INS is aligned sufficiently for flight and weapons employment
-    uint_least8_t systemDamage;         // placeholder, not presently used
+    double systemDamage;         // placeholder, not presently used
 
     // interface variables
     const std::chrono::milliseconds refreshInterval = std::chrono::milliseconds(20);;  // interval between system state updates; 100 times per second
 
     // physical constants
     // mean Earth radius in meters
-    const float Re = 6371000;
+    const double Re = 6371000;
 
 
     // function members
     // helper functions
-    void setLatitude(float lat);
-    void setLongitude(float longitude);
-    void setHeading(int_least8_t heading);
-    void setAltitude(float altitude);
-    void setCurrentGroundSpeed(float speed);
-    void setCurrentRadarAltitude(float altitude);
-    void setCurrentBaroAltitude(float altitude);
-    void setCurrentHeading(int_least8_t heading);
+    void setLatitude(double lat);
+    void setLongitude(double longitude);
+    void setHeading(double heading);
+    void setAltitude(double altitude);
+    void setCurrentGroundSpeed(double speed);
+    void setCurrentRadarAltitude(double altitude);
+    void setCurrentBaroAltitude(double altitude);
+    void setCurrentHeading(double heading);
 
     // system initialisation functions
     // parameters are placeholders pending API integration
@@ -137,18 +137,18 @@ private:
     const long dt = refreshInterval.count() / 20.0; // Time step in 20 ms intervals
     void initializeNoiseCovarianceMatrices(); // Process noise parameters (standard deviations)
     void initializeKalmanFilter();   // initialises Kalman filter variables to simulate very low uncertainty in system
-    Eigen::MatrixXd initializeMatrix(bool initializeToZero, int rows, int cols, double scaleFactor = 1.0);
+    Eigen::MatrixXd initializeMatrix(bool initializeToZero, int rows, int cols, float scaleFactor = 1);
     void updateWithGNSSMeasurements(Eigen::VectorXd& z);
     void estimateStateChange();
-    void estimateVelocityChange(float accelInX, float accelInY, float accelInZ);  // estimate velocity change using Kalman filter function
+    void estimateVelocityChange(double accelInX, double accelInY, double accelInZ);  // estimate velocity change using Kalman filter function
     // estimateVelocityChange helper functions
     void predictStep();
-    void updateStateWithAccelMeasurement(float accelInX, float accelInY, float accelInZ);
+    void updateStateWithAccelMeasurement(double accelInX, double accelInY, double accelInZ);
     void updateStep();
     void updateCurrentVariables();
-    void updateStateWithGyroMeasurement(float_t gyroPitchRate, float_t gyroYawRate, float_t gyroRollRate);
+    void updateStateWithGyroMeasurement(double gyroPitchRate, double gyroYawRate, double gyroRollRate);
     void estimatePositionChange();  // estimate position change using velocity change a Kalman filter
-    void updatePosition(); // function to update latitude and longitude based on heading and ground speed
+    void updatePosition(); // function to update latitude and longitude based on heading and ground speedX
 
 };
 

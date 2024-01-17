@@ -20,24 +20,24 @@ public:
        * @param deltaT The time interval between function calls.
        * @return currentOrientation The updated orientation of the gyroscope.
        */
-    float_t updateOrientation(float_t angularVelocity, float_t deltaT);
+    double updateOrientation(double angularVelocity, double deltaT);
 
     /**
      * @brief Simulates the error in measurements due to hardware and software inaccuracies.
      * @param minErr The minimum error value.
      * @param maxErr The maximum error value.
      */
-    float_t simulateError(float_t minErr, float_t maxErr);
+    double simulateError(double minErr, double maxErr);
 
     /**
      * @brief Returns the current Angular Rate.
      */
-    float_t getAngularRate();
+    [[nodiscard]] double getAngularVelocity() const;
 
 private:
-    float_t currentOrientation;     ///< Current orientation of the gyroscope.
-    float_t previousAngularVelocity;///< Previous angular velocity.
-    float_t previousOrientation;    ///< Previous orientation.
+    double currentOrientation;     ///< Current orientation of the gyroscope in degrees.
+    double previousAngularVelocity;///< Previous angular velocity i.e. at last measurement.
+    double previousOrientation;    ///< Previous orientation.
 
     std::default_random_engine randomNumberGenerator;  ///< Generates random numbers for simulating measurement errors.
 };

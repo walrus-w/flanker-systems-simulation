@@ -18,7 +18,7 @@ file(GLOB SOURCES "src/*.hpp"
                   "src/*.cpp"
 )
 
-add_executable(navSystem main.cpp accelerometer.hpp acPowerSupply.hpp airDataComputer.hpp BII_9.hpp blackBox.hpp dcPowerSupply.hpp
+add_executable(navSystem main.cpp quartzAccelerometer.hpp acPowerSupply.hpp airDataComputer.hpp BII_9.hpp blackBox.hpp dcPowerSupply.hpp
                 gnss.hpp navigationComputer.hpp navSystemTest.hpp ringLaserGyroscopeV2.hpp systemPowerSupply.hpp
         BII_9.cpp
         quartzAccelerometer.cpp

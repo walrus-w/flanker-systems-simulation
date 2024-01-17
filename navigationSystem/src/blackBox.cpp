@@ -5,3 +5,7 @@
 
 BlackBox::BlackBox()
         : isPowered(false), isOn(false), isReady(false){}
+
+void BlackBox::initialisationSequence() {
+
+}

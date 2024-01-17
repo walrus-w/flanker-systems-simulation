@@ -8,16 +8,39 @@
 
 #include <iostream>
 
+/**
+ * @class GNSS
+ * @brief This class is a simple simulation of a generic GNSS receiver
+ *
+ * A GNSS object will take position data and apply an error factor to it
+ */
+
 class GNSS {
 public:
-    float_t latitude;
-    double longitude;
-    double altitude;
+    // data members
 
+    // function members
     GNSS();
+    void setGNSS(double inputLatitude, double inputLongitude, double inputAltitude, double inputSpeedX,
+                 double inputSpeedY, double inputHeading);
+    [[nodiscard]] double getGNSSlatitude() const;
+    [[nodiscard]] double getGNSSlongitude() const;
+    [[nodiscard]] double getGNSSalt() const;
+    [[nodiscard]] double getGNSSspeedX() const;
+    [[nodiscard]] double getGNSSspeedY() const;
+    [[nodiscard]] double getGNSSheading() const;
 
     // simulate GNSS update based on time
     void simulate(double time);
+
+private:
+    // data members
+    double latitude;
+    double longitude;
+    double altitude;
+    double speedX;
+    double speedY;
+    double heading;
 };
 
 

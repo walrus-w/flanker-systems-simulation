@@ -21,7 +21,7 @@ float BII_9::getCurrentLat() const {
     return currentLatitude;
 }
 
-void BII_9::setLatitude(float lat) {
+void BII_9::setLatitude(double lat) {
     currentLatitude = lat;
 }
 
@@ -29,7 +29,7 @@ float BII_9::getCurrentLong() const {
     return currentLongitude;
 }
 
-void BII_9::setLongitude(float longitude) {
+void BII_9::setLongitude(double longitude) {
     currentLongitude = longitude;
 }
 
@@ -37,7 +37,7 @@ float BII_9::getCurrentGroundSpeed() const {
     return currentGroundSpeed;
 }
 
-void BII_9::setCurrentGroundSpeed(float speed) {
+void BII_9::setCurrentGroundSpeed(double speed) {
     currentGroundSpeed = speed;
 }
 
@@ -45,7 +45,7 @@ float BII_9::getCurrentRadarAltitude() const {
     return currentRadarAltitude;
 }
 
-void BII_9::setCurrentRadarAltitude(float altitude) {
+void BII_9::setCurrentRadarAltitude(double altitude) {
     currentRadarAltitude = altitude;
 }
 
@@ -53,7 +53,7 @@ float BII_9::getCurrentBaroAltitude() const {
     return currentBaroAltitude;
 }
 
-void BII_9::setCurrentBaroAltitude(float altitude) {
+void BII_9::setCurrentBaroAltitude(double altitude) {
     currentBaroAltitude = altitude;
 }
 
@@ -61,11 +61,11 @@ int_fast8_t BII_9::getCurrentHeading() const {
     return currentMagneticHeading;
 }
 
-void BII_9::setCurrentHeading(int_least8_t heading) {
+void BII_9::setCurrentHeading(double heading) {
     currentMagneticHeading = heading;
 }
 
-// function to update latitude and longitude based on heading and ground speed
+// function to update latitude and longitude based on heading and ground speedX
 void BII_9::updatePosition() {
     float headingRad = currentTrueHeading * M_PI / 180.0;   //true heading converted to radians
     float deltaLatitude = currentGroundSpeed * refreshInterval.count() / 1000.0 * std::sin(headingRad); // calculate delta lat
@@ -76,7 +76,7 @@ void BII_9::updatePosition() {
 
 // initializes a MatrixXd object with either 0 or identity matrix
 // depending on the 'initializeToZero' flag and optionally scales it by scaleFactor
-Eigen::MatrixXd BII_9::initializeMatrix(bool initializeToZero, int rows, int cols, float scaleFactor = 1) {
+Eigen::MatrixXd BII_9::initializeMatrix(bool initializeToZero, int rows, int cols, float scaleFactor) {
     if (initializeToZero)
         return Eigen::MatrixXd::Zero(rows, cols);
     else
@@ -86,7 +86,7 @@ Eigen::MatrixXd BII_9::initializeMatrix(bool initializeToZero, int rows, int col
 void BII_9::initializeNoiseCovarianceMatrices() {
     // Process noise parameters (standard deviations)
     float pos_stddev_km_hr = 1.85;   //1.85 km/hr for position
-    float speed_stddev_m_s = 1.0;    //1 m/s for ground speed
+    float speed_stddev_m_s = 1.0;    //1 m/s for ground speedX
     float heading_stddev_deg = 0.05; //0.05 deg for heading
     float roll_stddev_deg = 0.05;    //0.05 deg for roll
     float pitch_stddev_deg = 0.05;   //0.05 deg for pitch
@@ -146,7 +146,7 @@ void BII_9::updateWithGNSSMeasurements(Eigen::VectorXd& z) {
     covariance = (Eigen::MatrixXd::Identity(size, size) - K * H) * covariance;
 }
 
-void BII_9::updateStateWithGyroMeasurement(float_t gyroPitchRate, float_t gyroYawRate, float_t gyroRollRate) {
+void BII_9::updateStateWithGyroMeasurement(double gyroPitchRate, double gyroYawRate, double gyroRollRate) {
     state(6) += gyroPitchRate * dt;  // Update pitch
     state(7) += gyroYawRate * dt;    // Update yaw
     state(8) += gyroRollRate * dt;   // Update roll
@@ -168,14 +168,14 @@ void BII_9::estimateStateChange() {
     updateCurrentVariables();
 
     // Update gyro measurements
-    float gyroPitchRate = rlgPitch.getAngularRate();
-    float gyroYawRate = rlgYaw.getAngularRate();
-    float gyroRollRate = rlgRoll.getAngularRate();
+    float gyroPitchRate = rlgPitch.getAngularVelocity();
+    float gyroYawRate = rlgYaw.getAngularVelocity();
+    float gyroRollRate = rlgRoll.getAngularVelocity();
 
     updateStateWithGyroMeasurement(gyroPitchRate, gyroYawRate, gyroRollRate);
 }
 
-void BII_9::estimateVelocityChange(float accelInX, float accelInY, float accelInZ) {
+void BII_9::estimateVelocityChange(double accelInX, double accelInY, double accelInZ) {
     predictStep();
     updateStateWithAccelMeasurement(accelInX, accelInY, accelInZ);
     updateStep();
@@ -188,7 +188,7 @@ void BII_9::predictStep() {
     covariance = A * covariance * A.transpose() + Q;  // predict covariance
 }
 
-void BII_9::updateStateWithAccelMeasurement(float_t accelInX, float_t accelInY, float_t accelInZ) {
+void BII_9::updateStateWithAccelMeasurement(double accelInX, double accelInY, double accelInZ) {
     // Update velocity by integrating acceleration
     state(3) += accelInX * dt;  // Update velocity X
     state(4) += accelInY * dt;  // Update velocity Y
@@ -200,7 +200,7 @@ void BII_9::updateStateWithAccelMeasurement(float_t accelInX, float_t accelInY, 
     state(2) += state(5) * dt;  // Update altitude (considering velocity in Z-direction corresponds to altitude)
 }
 void BII_9::updateStep() {
-    Eigen::MatrixXd measurement(32, 1);  // measurement vector [latitude, longitude, ground speed, accelInX, accelInY, accelInZ]
+    Eigen::MatrixXd measurement(32, 1);  // measurement vector [latitude, longitude, ground speedX, accelInX, accelInY, accelInZ]
     measurement << currentLatitude, currentLongitude, currentGroundSpeed, accelInX, accelInY, accelInZ, Eigen::MatrixXd::Zero(26, 1);
     Eigen::MatrixXd innovation = measurement - H * state;  // Innovation
     Eigen::MatrixXd innovationCovariance = H * covariance * H.transpose() + R;  // Innovation covariance
@@ -212,7 +212,7 @@ void BII_9::updateStep() {
 }
 
 void BII_9::updateCurrentVariables() {
-    // Update current latitude, longitude, and ground speed with Kalman filter estimates
+    // Update current latitude, longitude, and ground speedX with Kalman filter estimates
     currentLatitude = state(0, 0);
     currentLongitude = state(1, 0);
     currentGroundSpeed = state(2, 0);
@@ -231,9 +231,9 @@ void BII_9::estimatePositionChange() {
     // predict the covariance block corresponding to latitude and longitude; helps determine accuracy and uncertainty of estimate
     covariance.block(0, 0, 2, 2) = A.block(0, 0, 2, 2) * covariance.block(0, 0, 2, 2) * A.block(0, 0, 2, 2).transpose() + Q.block(0, 0, 2, 2);
 
-    // Update current latitude and longitude based on ground speed
-    state(0, 0) += state(2, 0) * dt;  // Update latitude based on current ground speed
-    state(1, 0) += state(3, 0) * dt;  // Update longitude based on current ground speed
+    // Update current latitude and longitude based on ground speedX
+    state(0, 0) += state(2, 0) * dt;  // Update latitude based on current ground speedX
+    state(1, 0) += state(3, 0) * dt;  // Update longitude based on current ground speedX
 
 }
 
