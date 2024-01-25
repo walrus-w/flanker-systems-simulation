@@ -29,9 +29,9 @@ public:
     double getAcceleration();
 
 private:
-    double currentVelocity;
-    double previousVelocity;
-    int interval;
+    double currentVelocity{};
+    double previousVelocity{};
+    int interval{};
     double measurementError;
 };
 

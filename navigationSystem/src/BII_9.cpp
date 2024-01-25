@@ -17,7 +17,7 @@ BII_9::BII_9(RingLaserGyroscope& rlgPitchArg, RingLaserGyroscope& rlgYawArg,
           currentTrueHeading(0), currentSpeedError(100), currentHeadingError(100), systemDamage(0) {}
 
 
-float BII_9::getCurrentLat() const {
+double BII_9::getCurrentLat() const {
     return currentLatitude;
 }
 
@@ -25,7 +25,7 @@ void BII_9::setLatitude(double lat) {
     currentLatitude = lat;
 }
 
-float BII_9::getCurrentLong() const {
+double BII_9::getCurrentLong() const {
     return currentLongitude;
 }
 
@@ -33,7 +33,7 @@ void BII_9::setLongitude(double longitude) {
     currentLongitude = longitude;
 }
 
-float BII_9::getCurrentGroundSpeed() const {
+double BII_9::getCurrentGroundSpeed() const {
     return currentGroundSpeed;
 }
 
@@ -41,7 +41,7 @@ void BII_9::setCurrentGroundSpeed(double speed) {
     currentGroundSpeed = speed;
 }
 
-float BII_9::getCurrentRadarAltitude() const {
+double BII_9::getCurrentRadarAltitude() const {
     return currentRadarAltitude;
 }
 
@@ -49,7 +49,7 @@ void BII_9::setCurrentRadarAltitude(double altitude) {
     currentRadarAltitude = altitude;
 }
 
-float BII_9::getCurrentBaroAltitude() const {
+double BII_9::getCurrentBaroAltitude() const {
     return currentBaroAltitude;
 }
 
@@ -57,7 +57,7 @@ void BII_9::setCurrentBaroAltitude(double altitude) {
     currentBaroAltitude = altitude;
 }
 
-int_fast8_t BII_9::getCurrentHeading() const {
+double BII_9::getCurrentHeading() const {
     return currentMagneticHeading;
 }
 
@@ -67,10 +67,10 @@ void BII_9::setCurrentHeading(double heading) {
 
 // function to update latitude and longitude based on heading and ground speedX
 void BII_9::updatePosition() {
-    float headingRad = currentTrueHeading * M_PI / 180.0;   //true heading converted to radians
-    float deltaLatitude = currentGroundSpeed * refreshInterval.count() / 1000.0 * std::sin(headingRad); // calculate delta lat
+    double headingRad = currentTrueHeading * M_PI / 180.0;   //true heading converted to radians
+    double deltaLatitude = currentGroundSpeed * refreshInterval.count() / 1000.0 * std::sin(headingRad); // calculate delta lat
     currentLatitude += deltaLatitude;   // update latitude
-    float deltaLongitude = currentGroundSpeed * refreshInterval.count() / 1000.0 * std::cos(headingRad); // calculate delta long
+    double deltaLongitude = currentGroundSpeed * refreshInterval.count() / 1000.0 * std::cos(headingRad); // calculate delta long
     currentLongitude += deltaLongitude; // update longitude
 }
 
@@ -92,7 +92,7 @@ void BII_9::initializeNoiseCovarianceMatrices() {
     float pitch_stddev_deg = 0.05;   //0.05 deg for pitch
 
     // Typically for process noise covariance Q you would transform stddev to variance by squaring it
-    // Here it is assumed stddev^2 is applied directly to give a good weight to each parameters
+    // Here it is assumed stddev^2 is applied directly to give a good weight to each parameter
     Q.block(0, 0, 3, 3) = pos_stddev_km_hr * pos_stddev_km_hr * Eigen::MatrixXd::Identity(3, 3); //applying to position
     Q.block(3, 3, 2, 2) = speed_stddev_m_s * speed_stddev_m_s * Eigen::MatrixXd::Identity(2, 2); //applying to velocity
     Q.block(5, 5, 1, 1) = heading_stddev_deg * heading_stddev_deg * Eigen::MatrixXd::Identity(1, 1); //applying to heading

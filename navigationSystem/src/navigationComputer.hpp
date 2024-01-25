@@ -21,6 +21,16 @@ struct waypoint {
     float_t altitude;
 };
 
+struct radioNavBeacon : waypoint {
+    double frequency;
+};
+
+struct ils : radioNavBeacon {
+    waypoint outerMarker;
+    waypoint middleMarker;
+    waypoint innerMarker;
+};
+
 class NavigationComputer:BlackBox {
 public:
     NavigationComputer();   // cold and dark constructor
@@ -47,6 +57,8 @@ public:
 private:
     BII_9 ins;
     std::vector<waypoint> waypointStorage;
+    std::vector<radioNavBeacon> radioNavBeaconStorage;
+    std::vector<ils> ilsStorage;
     const waypoint bullseye;
 
 };
