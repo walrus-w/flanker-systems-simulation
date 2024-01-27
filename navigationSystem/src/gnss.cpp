@@ -4,11 +4,13 @@
 
 #include "gnss.hpp"
 
-GNSS::GNSS() : latitude(0.0), longitude(0.0), altitude(0.0), speedX(0.0),
-                speedY(0.0), heading(0.0) {}
+GNSS::GNSS(double &newLatitude, double &newLongitude, double &newAltitude, double &newSpeedX, double &newSpeedY,
+           double &newHeading, double &measurementError)
+           : latitude(newLatitude), longitude(newLongitude), altitude(newAltitude), speedX(newSpeedX), speedY(newSpeedY),
+             heading(newHeading), measurementError(measurementError) {}
 
-void GNSS::setGNSS(double inputLatitude, double inputLongitude, double inputAltitude, double inputSpeedX,
-                   double inputSpeedY, double inputHeading) {
+void GNSS::setGNSS(const double inputLatitude, const double inputLongitude, const double inputAltitude,
+                   const double inputSpeedX, const double inputSpeedY, const double inputHeading) {
     this->latitude = inputLatitude;
     this->longitude = inputLongitude;
     this->altitude = inputAltitude;
@@ -17,41 +19,70 @@ void GNSS::setGNSS(double inputLatitude, double inputLongitude, double inputAlti
     this->heading = inputHeading;
 }
 
+void GNSS::updateGNSSlatitude(const double newLat) {
+    this->latitude = newLat;
+}
+
 double GNSS::getGNSSlatitude() const {
-    return latitude;
+    return this->latitude;
+}
+
+void GNSS::updateGNSSlongitude(const double newLong) {
+    this->longitude = newLong;
 }
 
 double GNSS::getGNSSlongitude() const {
     return longitude;
 }
 
+void GNSS::updateGNSSalt(const double newAlt) {
+    this->altitude = newAlt;
+}
+
 double GNSS::getGNSSalt() const {
-    return altitude;
+    return this->altitude;
+}
+
+void GNSS::updateGNSSspeedX(const double newSpeed) {
+    this->speedX = newSpeed;
 }
 
 double GNSS::getGNSSspeedX() const {
     return speedX;
 }
 
+void GNSS::updateGNSSspeedY(const double newSpeed) {
+    this->speedY = newSpeed;
+}
+
 double GNSS::getGNSSspeedY() const {
     return speedY;
+}
+
+void GNSS::updateGNSSHeading(double newHeading) {
+    this->heading = newHeading;
 }
 
 double GNSS::getGNSSheading() const {
     return heading;
 }
 
-void GNSS::simulate(double time) {
-    // simple simulation: GNSS position changes linearly with time
-    latitude = 0.1 * time;
-    longitude = 0.2 * time;
-    altitude = 10000.0 + 500.0 * time;
-
-    std::cout << "Simulated GNSS Data:\n"
-              << "Latitude: " << latitude << " degrees\n"
-              << "Longitude: " << longitude << " degrees\n"
-              << "Altitude: " << altitude << " meters\n\n";
+double &GNSS::updateMeasurementError() {
+    return measurementError = 2;    // arbitrary value pending complete implementation
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -67,8 +67,9 @@ private:
     // positional and orientation variables
     double currentLatitude;          // current lat/long of system. Initialised to nullptr
     double currentLongitude;
-    double currentMagneticHeading;
     double currentTrueHeading;
+    double currentMagneticHeading;
+    double currentMagneticVariation;
     double currentBaroAltitude;
     double currentRadarAltitude;
     double currentAltitudeASL;
@@ -78,9 +79,6 @@ private:
     double currentCalibratedAirSpeed;
     double currentAngleOfBank;
     double currentAngleOfPitch;
-    double currentAngleOfYaw;
-    double currentSpeedError;    // initialised to an arbitrary maximum value, which decreases as alignment time increases
-    double currentHeadingError;  // error will gradually accumulate post-alignment, unless corrected via satellite or (potentially) radar fix
 
    // physical system variables
     std::chrono::seconds alignmentTime;          // time remaining for full alignment of INS
@@ -101,16 +99,34 @@ private:
     [[nodiscard]] double getCurrentLatitude() const;
     void setCurrentLongitude(double longitude);
     [[nodiscard]] double getCurrentLongitude() const;
-    void setCurrentHeading(double heading);
-    [[nodiscard]] double getCurrentHeading() const;
+    void setCurrentTrueHeading(double heading);
+    [[nodiscard]] double getCurrentTrueHeading() const;
+    void setCurrentMagHeading(double heading);
+    [[nodiscard]] double getCurrentMagHeading() const;
+    void setCurrentMagneticVariation(double magVariation);
+    [[nodiscard]] double getCurrentMagneticVariation() const;
+    void setCurrentBaroAltitude(double altitude);
+    [[nodiscard]] double getCurrentBaroAltitude() const;
+    void setCurrentRadarAltitude(double altitude);
+    [[nodiscard]] double getCurrentRadarAltitude() const;
+    void setCurrentAltitudeASL(double altitude);
+    [[nodiscard]] double getCurrentAltitudeASL() const;
     void setCurrentGroundSpeed(double groundSpeed);
     [[nodiscard]] double getCurrentGroundSpeed() const;
-    void setCurrentTAS(double tas);
+    void setCurrentTAS(double speed);
     [[nodiscard]] double getCurrentTAS() const;
-    void setAltitude(double altitude);
-    void setCurrentGroundSpeed(double speed);
-    void setCurrentRadarAltitude(double altitude);
-    void setCurrentBaroAltitude(double altitude);
+    void setCurrentIAS(double speed);
+    [[nodiscard]] double getCurrentIAS() const;
+    void setCurrentCAS(double speed);
+    [[nodiscard]] double getCurrentCAS() const;
+    void setCurrentAngleOfBank(double angle);
+    [[nodiscard]] double getCurrentAngleOfBank() const;
+    void setCurrentAngleOfPitch(double angle);
+    [[nodiscard]] double getCurrentAngleOfPitch() const;
+
+    void updatePosition();
+    // helper functions for updatePosition()
+
 
 };
 

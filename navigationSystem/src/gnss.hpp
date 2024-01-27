@@ -20,27 +20,36 @@ public:
     // data members
 
     // function members
-    GNSS();
+    GNSS(double &newLatitude, double &newLongitude, double &newAltitude, double &newSpeedX, double &newSpeedY,
+         double &newHeading, double &measurementError);
     void setGNSS(double inputLatitude, double inputLongitude, double inputAltitude, double inputSpeedX,
                  double inputSpeedY, double inputHeading);
+    void updateGNSSlatitude(double newLat);
     [[nodiscard]] double getGNSSlatitude() const;
+    void updateGNSSlongitude(double newLong);
     [[nodiscard]] double getGNSSlongitude() const;
+    void updateGNSSalt(double newAlt);
     [[nodiscard]] double getGNSSalt() const;
+    void updateGNSSspeedX(const double newSpeed);
     [[nodiscard]] double getGNSSspeedX() const;
+    void updateGNSSspeedY(double newSpeed);
     [[nodiscard]] double getGNSSspeedY() const;
+    void updateGNSSHeading(double newHeading);
     [[nodiscard]] double getGNSSheading() const;
 
-    // simulate GNSS update based on time
-    void simulate(double time);
 
 private:
     // data members
-    double latitude;
-    double longitude;
-    double altitude;
-    double speedX;
-    double speedY;
-    double heading;
+    double& latitude;
+    double& longitude;
+    double& altitude;
+    double& speedX;
+    double& speedY;
+    double& heading;
+    double& measurementError;
+
+    // function members
+    double& updateMeasurementError();
 };
 
 
