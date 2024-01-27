@@ -1,0 +1,140 @@
+// RWR_ALR56.lua from F-16I mod
+dofile(LockOn_Options.common_script_path..'AN_ALR_SymbolsBase.lua')
+
+local gettext = require("i_18n")
+_ = gettext.translate
+
+device_timer_dt     = 0.2
+MaxThreats          = 50
+EmitterLiveTime     = 11
+EmitterSoundTime    = 0.5
+LaunchSoundDelay    = 2.0
+
+RWR_detection_coeff = 10.0
+
+-- sounds for radars
+SoundsPath = "Aircrafts/F-5E/Cockpit/RWR/"
+DefaultGuidedSnd = SoundsPath .. "750Hz"
+DefaultSearchSnd = SoundsPath .. "1500Hz"
+DefaultOnboardSnd = SoundsPath .. "1744Hz"
+DefaultCannonSnd = SoundsPath .. "1974Hz"
+
+-- RWR sensors: F-16I SUFA has eleven sensors - 2 on nose and 2 in tail
+eyes ={}
+--nose 1
+eyes[1] =
+{
+    position      = {x = 6.7,y = -0.1,z =  0.35},
+    orientation   = {azimuth  = math.rad(45),elevation = math.rad(0.0)},
+    field_of_view = math.rad(120)
+}
+--nose 2
+eyes[2] =
+{
+    position      = {x = 6.7,y = -0.1,z = 0.35},
+    orientation   = {azimuth  = math.rad(-45),elevation = math.rad(0.0)},
+    field_of_view = math.rad(120)
+}
+--tail 1
+eyes[3] =
+{
+    position      = {x = -5.5,y = 0.15,z =  0.6},
+    orientation   = {azimuth  = math.rad(135),elevation = math.rad(0.0)},
+    field_of_view = math.rad(120)
+}
+--tail 2
+eyes[4] =
+{
+    position      = {x = -5.5,y = 0.15,z =  -0.6},
+    orientation   = {azimuth  = math.rad(-135),elevation = math.rad(0.0)},
+    field_of_view = math.rad(120)
+}
+--spine back 1
+eyes[5] =
+{
+    position      = {x = -4.5,y = -0.15,z = 0.60},
+    orientation   = {azimuth  = math.rad(135),elevation = math.rad(30.0)},
+    field_of_view = math.rad(120)
+}
+--spine back 2
+eyes[6] =
+{
+    position      = {x = -4.5,y = 0.15,z = 0.60},
+    orientation   = {azimuth  = math.rad(-45),elevation = math.rad(45.0)},
+    field_of_view = math.rad(120)
+}
+--spine up 1
+eyes[7] =
+{
+    position      = {x = -4.0,y = 0.0,z = 0.70},
+    orientation   = {azimuth  = math.rad(-45),elevation = math.rad(90.0)},
+    field_of_view = math.rad(120)
+}
+--spine up 2
+eyes[8] =
+{
+    position      = {x = 6.7,y = -0.1,z = 0.35},
+    orientation   = {azimuth  = math.rad(-90),elevation = math.rad(0.0)},
+    field_of_view = math.rad(120)
+}
+--fuselage lower back
+eyes[9] =
+{
+    position      = {x = -5.0,y = -0.2,z = -2.00},
+    orientation   = {azimuth  = math.rad(135),elevation = math.rad(0.0)},
+    field_of_view = math.rad(120)
+}
+--Nav light left
+eyes[10] =
+{
+    position      = {x = 6.5,y = 0.3,z = -1.32},
+    orientation   = {azimuth  = math.rad(45),elevation = math.rad(-20.0)},
+    field_of_view = math.rad(120)
+}
+--Nav light right
+eyes[11] =
+{
+    position      = {x = 6.5,y = -0.3,z = -1.32},
+    orientation   = {azimuth  = math.rad(-45),elevation = math.rad(-20.0)},
+    field_of_view = math.rad(120)
+}
+
+AN_ALR56_FAILURE_SENSOR_NOSE_RIGHT = 0
+AN_ALR56_FAILURE_SENSOR_NOSE_LEFT  = 1
+AN_ALR56_FAILURE_SENSOR_TAIL_RIGHT = 2
+AN_ALR56_FAILURE_SENSOR_TAIL_LEFT  = 3
+AN_ALR56_FAILURE_TOTAL         = 4
+
+Damage = {  {Failure = AN_ALR56_FAILURE_SENSOR_NOSE_RIGHT,	Failure_name =  "AN_ALR56_FAILURE_SENSOR_NOSE_RIGHT",	Failure_editor_name = _("AN/ALR-56 sensor nose right"),	Element = 0,  Integrity_Treshold = 0.0,  work_time_to_fail_probability = 0.5, work_time_to_fail = 3600*300},
+			{Failure = AN_ALR56_FAILURE_SENSOR_NOSE_LEFT,	Failure_name =  "AN_ALR56_FAILURE_SENSOR_NOSE_LEFT",	Failure_editor_name = _("AN/ALR-56 sensor tail right"),	Element = 0,  Integrity_Treshold = 0.25, work_time_to_fail_probability = 0.5, work_time_to_fail = 3600*300},
+			{Failure = AN_ALR56_FAILURE_SENSOR_TAIL_RIGHT,	Failure_name =  "AN_ALR56_FAILURE_SENSOR_TAIL_RIGHT",	Failure_editor_name = _("AN/ALR-56 sensor tail left"),	Element = 55, Integrity_Treshold = 0.5,  work_time_to_fail_probability = 0.5, work_time_to_fail = 3600*300},
+			{Failure = AN_ALR56_FAILURE_SENSOR_TAIL_LEFT,	Failure_name =  "AN_ALR56_FAILURE_SENSOR_TAIL_LEFT",	Failure_editor_name = _("AN/ALR-56 sensor nose left"),	Element = 55, Integrity_Treshold = 0.5,  work_time_to_fail_probability = 0.5, work_time_to_fail = 3600*300},
+			{Failure = AN_ALR56_FAILURE_TOTAL,				Failure_name =  "AN_ALR56_FAILURE_TOTAL",				Failure_editor_name = _("AN/ALR-56 total failure"),		Element = 4,  Integrity_Treshold = 0.0,  work_time_to_fail_probability = 0.5, work_time_to_fail = 3600*300}}
+
+need_to_be_closed = true -- close lua state after initialization
+
+// eof RWR_ALR56.lua
+
+// RadarDevice.lua from F-16I mod
+renderDebugInfo = false
+
+RDR_screenSizePx 					= 480
+RDR_tacticalAreaSizePx 				= 480		-- TODO
+
+RDR_TAC_AreaSize					= RDR_tacticalAreaSizePx / 2
+RDR_TDC_HeightPx					= 52
+RDR_TDC_WidthPx						= 62
+
+-- relative to screen size
+RDR_TAC_AreaSizeRelative			= RDR_tacticalAreaSizePx / RDR_screenSizePx
+RDR_TDC_HeightRelative				= RDR_TDC_HeightPx / RDR_screenSizePx
+RDR_TDC_WidthRelative				= RDR_TDC_WidthPx / RDR_screenSizePx
+
+-- relative to tactical area size
+RDR_TDC_HeightRelative_TAC			= RDR_TDC_HeightPx / RDR_tacticalAreaSizePx
+RDR_TDC_WidthRelative_TAC			= RDR_TDC_WidthPx / RDR_tacticalAreaSizePx
+--RDR_AOT_zoneSizeRelative			= RDR_AOT_zoneSizePx / RDR_tacticalAreaSizePx
+
+need_to_be_closed = true -- close lua state after initialization
+
+// eof RadarDevice.lua
