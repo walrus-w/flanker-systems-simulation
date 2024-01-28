@@ -12,8 +12,6 @@
 #ifndef SU_30_EFM_V2_7_3B_INERTIAL_NAVIGATION_SYSTEM_HXX
 #define SU_30_EFM_V2_7_3B_INERTIAL_NAVIGATION_SYSTEM_HXX
 
-#define _USE_MATH_DEFINES
-
 #include <cstddef>
 #include <cstdint>
 #include <chrono>
