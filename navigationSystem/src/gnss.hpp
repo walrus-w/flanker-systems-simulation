@@ -30,7 +30,7 @@ public:
     [[nodiscard]] double getGNSSlongitude() const;
     void updateGNSSalt(double newAlt);
     [[nodiscard]] double getGNSSalt() const;
-    void updateGNSSspeedX(const double newSpeed);
+    void updateGNSSspeedX(double newSpeed);
     [[nodiscard]] double getGNSSspeedX() const;
     void updateGNSSspeedY(double newSpeed);
     [[nodiscard]] double getGNSSspeedY() const;
